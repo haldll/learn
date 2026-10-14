@@ -1,5 +1,5 @@
 /* 柔雾单词 · Service Worker — 让主屏图标在完全离线时也能打开 */
-const CACHE = 'softhaze-ngsl-v1';
+const CACHE = 'softhaze-ngsl-v2';
 const ASSETS = ['./', './index.html'];
 
 self.addEventListener('install', e => {

@@ -221,6 +221,35 @@ nav.tabs svg{width:22px;height:22px}
 .done .big{font-size:44px;margin-bottom:6px}
 .done h3{font-size:19px;margin:0 0 4px}
 .done p{font-size:13px;color:var(--dim);margin:0 0 20px}
+
+/* todo */
+.trow{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.trow:last-child{border-bottom:none}
+.tck{flex:none;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;color:transparent;transition:all .15s}
+.tck:active{transform:scale(.9)}
+.trow.ok .tck{background:var(--green);border-color:var(--green);color:#fff}
+.trow .l{flex:1;min-width:0}
+.trow .tt{display:block;font-size:14.5px;line-height:1.45;word-break:break-word}
+.trow.ok .tt{color:var(--dim);text-decoration:line-through;text-decoration-color:var(--line)}
+.trow .td{display:block;font-size:11.5px;color:var(--dim);margin-top:1px}
+.trow .g{font-size:10px;color:var(--dim);border:1px solid var(--line);border-radius:5px;padding:0 5px;flex:none}
+.trow .go{flex:none;color:var(--dim);display:flex}
+.trow .del{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;color:var(--dim);opacity:.7}
+#homeTodoBody .del{display:none}
+.pdot{width:8px;height:8px;border-radius:50%;flex:none}
+.tgrp{font-size:11.5px;color:var(--dim);font-weight:600;letter-spacing:.02em;display:flex;align-items:center;gap:7px;padding:12px 2px 2px}
+.tgrp:first-child{padding-top:4px}
+.tgrp b{font-weight:400;margin-left:auto;font-variant-numeric:tabular-nums}
+.tadd{display:flex;gap:9px;align-items:center}
+.tadd input{flex:1;min-width:0;min-height:44px;border:1px solid var(--line);background:var(--card);border-radius:13px;padding:0 13px;font-size:15px;outline:none}
+.tadd input:focus{border-color:var(--cool)}
+.topts{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px}
+.topts .chips{flex:1;min-width:0}
+.wk{display:flex;align-items:flex-end;gap:6px;height:74px}
+.wk div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;font-size:10px;color:var(--dim)}
+.wk i{display:block;width:100%;max-width:26px;border-radius:5px 5px 3px 3px;background:var(--cool);min-height:3px;transition:height .5s cubic-bezier(.2,.7,.3,1)}
+.wk div.today i{background:var(--warm)}
+.wk b{font-weight:600;color:var(--ink);font-size:10.5px;font-variant-numeric:tabular-nums}
 @media(min-width:520px){main{padding-left:22px;padding-right:22px}}
 </style></head>
 <body>
@@ -263,6 +292,11 @@ nav.tabs svg{width:22px;height:22px}
   </div>
 
   <button class="btn" id="btnStart" style="margin-bottom:12px">开始今日学习</button>
+
+  <div class="card" id="homeTodo">
+    <h2>待办全览 <button id="homeTodoAll" style="color:var(--cool);font-size:12px">查看全部</button></h2>
+    <div id="homeTodoBody"></div>
+  </div>
 
   <div class="card">
     <h2>分组进度 <span style="font-weight:400;color:var(--dim)">按使用频率由高到低</span></h2>
@@ -385,6 +419,43 @@ nav.tabs svg{width:22px;height:22px}
   <div id="listMore" style="text-align:center;padding:14px 0"></div>
 </section>
 
+<!-- ============ TODO ============ -->
+<section class="view" id="v-todo">
+  <header class="top">
+    <div><h1>待办全览</h1><p class="sub" id="todoSub">学习任务与自建待办</p></div>
+  </header>
+
+  <div class="row" style="margin-bottom:12px">
+    <div class="stat"><b id="tdOpen" style="color:var(--warm)">0</b><span>未完成</span></div>
+    <div class="stat"><b id="tdHigh" style="color:#b4574a">0</b><span>高优先</span></div>
+    <div class="stat"><b id="tdDone" style="color:var(--green)">0</b><span>已完成</span></div>
+  </div>
+
+  <div class="card">
+    <h2>今日学习任务 <span style="font-weight:400;color:var(--dim)" id="tdAutoMeta"></span></h2>
+    <div id="tdAuto"></div>
+  </div>
+
+  <div class="card" style="padding:14px 16px">
+    <div class="tadd">
+      <input id="tdInput" type="text" placeholder="添加待办，例如：整理第 2 组易错词" autocomplete="off" maxlength="80">
+      <button class="btn sm" id="tdAddBtn" style="width:64px;flex:none">添加</button>
+    </div>
+    <div class="topts">
+      <div class="chips" id="tdCat"></div>
+      <div class="seg" id="tdPri"></div>
+    </div>
+  </div>
+
+  <div class="chips" style="margin-bottom:10px" id="tdFilters"></div>
+  <div class="card" style="padding:6px 16px" id="tdList"></div>
+
+  <div class="card">
+    <h2>未来 7 天复习 <span style="font-weight:400;color:var(--dim)" id="tdWeekSum"></span></h2>
+    <div class="wk" id="tdWeek"></div>
+  </div>
+</section>
+
 </main>
 
 <nav class="tabs"><div class="in">
@@ -396,6 +467,8 @@ nav.tabs svg{width:22px;height:22px}
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11.5 11 13.5 15.5 9"/><rect x="3.5" y="4" width="17" height="16" rx="3"/></svg>测验</button>
   <button data-tab="list">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg>词表</button>
+  <button data-tab="todo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6.5 1.5 1.5L8 5.5"/><path d="m4 12.5 1.5 1.5L8 11.5"/><path d="M11.5 7h8.5M11.5 13h8.5M4.5 18.5h15.5"/></svg>待办</button>
 </div></nav>
 </div>
 
@@ -418,9 +491,9 @@ const LS = (()=>{ try{ localStorage.setItem('__t','1'); localStorage.removeItem(
   catch(e){ const m={}; return {getItem:k=>k in m?m[k]:null,setItem:(k,v)=>m[k]=String(v),removeItem:k=>delete m[k]}; } })();
 const KEY='softhaze.ngsl.v1';
 
-const DEF = { cards:{}, newPerDay:20, revCap:120, streak:0, lastDay:'', days:{}, theme:'auto', autoSpeak:true, rate:0.9 };
+const DEF = { cards:{}, newPerDay:20, revCap:120, streak:0, lastDay:'', days:{}, theme:'auto', autoSpeak:true, rate:0.9, todos:[] };
 let S = load();
-function load(){ try{ const o=JSON.parse(LS.getItem(KEY)); if(o&&o.cards) return Object.assign({},DEF,o);}catch(e){} return JSON.parse(JSON.stringify(DEF)); }
+function load(){ try{ const o=JSON.parse(LS.getItem(KEY)); if(o&&o.cards) return Object.assign({},DEF,{todos:[]},o);}catch(e){} return JSON.parse(JSON.stringify(DEF)); }
 let saveT=null;
 function save(){ clearTimeout(saveT); saveT=setTimeout(()=>{ try{LS.setItem(KEY,JSON.stringify(S));}catch(e){} },250); }
 function todayKey(d){ d=d||new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
@@ -543,6 +616,7 @@ function go(tab){
   if(tab==='study') startStudyIfIdle();
   if(tab==='quiz') renderQuizMenu();
   if(tab==='list') renderList(true);
+  if(tab==='todo') renderTodo();
 }
 $$('nav.tabs button').forEach(b=>b.onclick=()=>go(b.dataset.tab));
 
@@ -571,6 +645,8 @@ function renderHome(){
       <span class="bar"><i style="width:${p}%;background:${cols[k]}"></i></span>
       <span class="num">${p}% · ${g[k][1]}</span></div>`;
   }).join('');
+
+  renderHomeTodo();
 
   // 今日一词
   const seed = Math.abs(hash(todayKey()))%TOTAL;
@@ -854,6 +930,136 @@ $$('#listFilters .chip').forEach(b=>b.onclick=()=>{
   LF=b.dataset.f; $$('#listFilters .chip').forEach(x=>x.classList.toggle('on',x===b)); renderList(true);
 });
 
+/* ==================== 待办全览 ==================== */
+const PRI=[['高','#b4574a'],['中','var(--warm)'],['低','var(--cool)']];
+const TCATS=['学习','复习','测验','其他'];
+const IC_CK='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>';
+const IC_GO='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>';
+const IC_X='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+let TD_CAT='学习', TD_PRI=1, TD_F='open';
+
+/* 学习任务由当前进度实时推导，不单独存储 */
+function autoTasks(){
+  const c=counts(), due=dueList().length, cap=S.revCap|0, d=S.days[todayKey()]||{};
+  const newDone=todayNewDone(), newLeft=Math.min(Math.max(0,(S.newPerDay|0)-newDone), c.fresh);
+  const qz=d.qz||0, signed=S.lastDay===todayKey();
+  return [
+    {key:'a-rv', auto:true, go:'study', p:0, cat:'复习', ok:!due,
+     t: due? `复习到期词 ${Math.min(due,cap)} 个` : '复习到期词',
+     d: due? (due>cap? `共 ${due} 个到期，今日上限 ${cap}` : '按记忆曲线已到期') : (d.rv? `今天已复习 ${d.rv} 次` : '暂时没有到期的词')},
+    {key:'a-nw', auto:true, go:'study', p:1, cat:'学习', ok:!newLeft,
+     t:`学习新词 ${S.newPerDay} 个`, d: newLeft? `今天已学 ${newDone} 个，还差 ${newLeft} 个` : `今天已学 ${newDone} 个`},
+    {key:'a-qz', auto:true, go:'quiz', p:2, cat:'测验', ok:qz>=10,
+     t:'完成一轮测验', d:`今天已答 ${Math.min(qz,10)} / 10 题`},
+    {key:'a-sk', auto:true, go:'study', p:1, cat:'学习', ok:signed,
+     t:'保持连续打卡', d: signed? `已连续 ${S.streak} 天` : (S.streak? `已连续 ${S.streak} 天，今天学一个词即可延续` : '学一个词就算打卡')}
+  ];
+}
+function fmtMD(ts){ const d=new Date(ts); return `${d.getMonth()+1}月${d.getDate()}日 ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
+function userTasks(){
+  return (S.todos||[]).map(x=>{
+    const age=Math.floor((dayStart()-new Date(x.at).setHours(0,0,0,0))/DAY);
+    return {key:'u-'+x.id, id:x.id, auto:false, p:x.p, cat:x.c, ok:!!x.ok, t:x.t, at:x.at, dt:x.dt,
+      d: x.ok? '完成于 '+fmtMD(x.dt) : (age>0? `已添加 ${age} 天` : '')};
+  });
+}
+function todoRow(x){
+  return `<div class="trow${x.ok?' ok':''}" data-k="${x.key}">
+    <button class="tck" aria-label="${x.auto?'前往':'切换完成'}">${IC_CK}</button>
+    <span class="l"><span class="tt">${esc(x.t)}</span>${x.d?`<span class="td">${esc(x.d)}</span>`:''}</span>
+    <i class="pdot" style="background:${PRI[x.p][1]}" title="${PRI[x.p][0]}优先"></i>
+    <span class="g">${esc(x.cat)}</span>
+    ${x.auto? `<span class="go">${IC_GO}</span>` : `<button class="del" aria-label="删除">${IC_X}</button>`}</div>`;
+}
+function bindTodoRows(root, items){
+  const by={}; items.forEach(x=>by[x.key]=x);
+  root.querySelectorAll('.trow').forEach(r=>{
+    const x=by[r.dataset.k]; if(!x) return;
+    if(x.auto){ r.style.cursor='pointer'; r.onclick=()=>{ go(x.go); if(x.go==='study') startSession(true); }; return; }
+    r.querySelector('.tck').onclick=()=>toggleTodo(x.id);
+    r.querySelector('.del').onclick=()=>{
+      S.todos=S.todos.filter(t=>t.id!==x.id); save(); refreshTodo(); toast('已删除');
+    };
+  });
+}
+function toggleTodo(id){
+  const t=S.todos.find(t=>t.id===id); if(!t) return;
+  t.ok=!t.ok; t.dt=t.ok? Date.now() : 0; save(); refreshTodo();
+}
+function addTodo(){
+  const inp=$('#tdInput'), v=(inp.value||'').trim();
+  if(!v){ inp.focus(); return; }
+  S.todos.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), t:v, p:TD_PRI, c:TD_CAT, ok:false, at:Date.now(), dt:0});
+  save(); inp.value=''; refreshTodo(); toast('已添加待办');
+}
+function refreshTodo(){ if(TAB==='todo') renderTodo(); if(TAB==='home') renderHomeTodo(); }
+function sortOpen(a,b){ return a.p-b.p || (a.auto===b.auto? (a.at||0)-(b.at||0) : (a.auto?-1:1)); }
+
+function renderHomeTodo(){
+  const all=[...autoTasks(), ...userTasks()];
+  const open=all.filter(x=>!x.ok).sort(sortOpen), done=all.length-open.length;
+  const pct=all.length? Math.round(done/all.length*100) : 0;
+  const show=open.slice(0,4);
+  const body=$('#homeTodoBody');
+  body.innerHTML=`<div class="grpline" style="margin-bottom:6px"><span class="nm">已完成</span>
+      <span class="bar"><i style="width:${pct}%;background:var(--green)"></i></span>
+      <span class="num">${done} / ${all.length}</span></div>`
+    + (show.length? show.map(todoRow).join('')
+       + (open.length>show.length? `<div style="font-size:12px;color:var(--dim);text-align:center;padding-top:8px">还有 ${open.length-show.length} 项未完成</div>` : '')
+      : `<div class="empty" style="padding:18px 10px 6px">今日待办已全部完成</div>`);
+  bindTodoRows(body, show);
+}
+$('#homeTodoAll').onclick=()=>go('todo');
+
+function renderTodo(){
+  const auto=autoTasks(), mine=userTasks(), all=[...auto, ...mine];
+  const open=all.filter(x=>!x.ok);
+  $('#tdOpen').textContent=open.length;
+  $('#tdHigh').textContent=open.filter(x=>x.p===0).length;
+  $('#tdDone').textContent=all.length-open.length;
+  $('#todoSub').textContent=`今日 ${all.length-open.length} / ${all.length} 已完成`;
+
+  $('#tdAutoMeta').textContent=`${auto.filter(x=>x.ok).length} / ${auto.length}`;
+  $('#tdAuto').innerHTML=auto.map(todoRow).join('');
+  bindTodoRows($('#tdAuto'), auto);
+
+  $('#tdCat').innerHTML=TCATS.map(c=>`<button class="chip${c===TD_CAT?' on':''}" data-c="${c}">${c}</button>`).join('');
+  $$('#tdCat .chip').forEach(b=>b.onclick=()=>{ TD_CAT=b.dataset.c; $$('#tdCat .chip').forEach(x=>x.classList.toggle('on',x===b)); });
+  $('#tdPri').innerHTML=PRI.map((p,i)=>`<button data-p="${i}" class="${i===TD_PRI?'on':''}" title="${p[0]}优先"><i class="pdot" style="display:inline-block;background:${p[1]};margin-right:4px;vertical-align:1px"></i>${p[0]}</button>`).join('');
+  $$('#tdPri button').forEach(b=>b.onclick=()=>{ TD_PRI=+b.dataset.p; $$('#tdPri button').forEach(x=>x.classList.toggle('on',x===b)); });
+
+  const F=[['open','未完成'],['all','全部'],['done','已完成'],['high','高优先'],...TCATS.map(c=>['c:'+c,c])];
+  const cnt=k=> k==='open'? mine.filter(x=>!x.ok).length : k==='all'? mine.length : k==='done'? mine.filter(x=>x.ok).length
+    : k==='high'? mine.filter(x=>!x.ok&&x.p===0).length : mine.filter(x=>x.cat===k.slice(2)).length;
+  $('#tdFilters').innerHTML=F.map(([k,l])=>`<button class="chip${k===TD_F?' on':''}" data-f="${k}">${l} ${cnt(k)}</button>`).join('');
+  $$('#tdFilters .chip').forEach(b=>b.onclick=()=>{ TD_F=b.dataset.f; renderTodo(); });
+
+  let pool=mine;
+  if(TD_F==='open') pool=mine.filter(x=>!x.ok);
+  else if(TD_F==='done') pool=mine.filter(x=>x.ok);
+  else if(TD_F==='high') pool=mine.filter(x=>!x.ok&&x.p===0);
+  else if(TD_F.startsWith('c:')) pool=mine.filter(x=>x.cat===TD_F.slice(2));
+  const groups=[];
+  [0,1,2].forEach(p=>{ const g=pool.filter(x=>!x.ok&&x.p===p).sort(sortOpen); if(g.length) groups.push([PRI[p][0]+'优先',PRI[p][1],g]); });
+  const dn=pool.filter(x=>x.ok).sort((a,b)=>(b.dt||0)-(a.dt||0));
+  if(dn.length) groups.push(['已完成','var(--green)',dn]);
+  const box=$('#tdList');
+  box.innerHTML = groups.length? groups.map(([n,col,g])=>`<div class="tgrp"><i class="pdot" style="background:${col}"></i>${n}<b>${g.length}</b></div>${g.map(todoRow).join('')}`).join('')
+    : `<div class="empty" style="padding:30px 20px">${mine.length? '这个筛选下没有待办' : '还没有自建待办，在上面添加一条吧'}</div>`;
+  bindTodoRows(box, pool);
+
+  const t0=dayStart(), wk=new Array(7).fill(0);
+  for(const k in S.cards){ if(!BY[k]) continue; const i=Math.max(0,Math.floor((S.cards[k].due-t0)/DAY)); if(i<7) wk[i]++; }
+  const mx=Math.max(1,...wk), WD='日一二三四五六';
+  $('#tdWeekSum').textContent=`共 ${wk.reduce((a,b)=>a+b,0)} 词`;
+  $('#tdWeek').innerHTML=wk.map((n,i)=>{
+    const lb= i===0?'今天': i===1?'明天' : '周'+WD[new Date(t0+i*DAY+DAY/2).getDay()];
+    return `<div class="${i===0?'today':''}"><b>${n}</b><i style="height:${Math.round(n/mx*44)+3}px"></i>${lb}</div>`;
+  }).join('');
+}
+$('#tdAddBtn').onclick=addTodo;
+$('#tdInput').onkeydown=e=>{ if(e.key==='Enter' && !e.isComposing) addTodo(); };
+
 /* ==================== 详情 / 设置 弹层 ==================== */
 function openSheet(html){ $('#sheetBody').innerHTML=html; $('#sheet').classList.add('on'); $('#mask').classList.add('on'); }
 function closeSheet(){ $('#sheet').classList.remove('on'); $('#mask').classList.remove('on'); }
@@ -933,7 +1139,7 @@ $('#btnSettings').onclick=()=>{
   seg('#segRate', b=>S.rate=+b.dataset.v);
   seg('#segTheme', b=>{ S.theme=b.dataset.v; applyTheme(); });
   $('#btnExport').onclick=async()=>{
-    const t=JSON.stringify({cards:S.cards,streak:S.streak,lastDay:S.lastDay,days:S.days});
+    const t=JSON.stringify({cards:S.cards,streak:S.streak,lastDay:S.lastDay,days:S.days,todos:S.todos});
     try{ await navigator.clipboard.writeText(t); toast('进度已复制'); }
     catch(e){ prompt('复制下面的文本保存：',t); }
   };
@@ -941,6 +1147,7 @@ $('#btnSettings').onclick=()=>{
     const t=prompt('粘贴之前导出的进度：'); if(!t) return;
     try{ const o=JSON.parse(t); if(!o.cards) throw 0;
       S.cards=o.cards; S.streak=o.streak||0; S.lastDay=o.lastDay||''; S.days=o.days||{};
+      if(Array.isArray(o.todos)) S.todos=o.todos;
       save(); closeSheet(); renderHome(); toast('导入成功'); }
     catch(e){ toast('格式不对，导入失败'); }
   };
